@@ -1,0 +1,8 @@
+A,B,C
+a,b
+X,Z
+A
+Z
+C
+-
+A a Z = C XZ

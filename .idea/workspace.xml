@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="24ac1105-5aeb-4f98-9cfd-d08beb66924d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Controller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/MachineGUI.java" afterDir="false" />
+    <list default="true" id="24ac1105-5aeb-4f98-9cfd-d08beb66924d" name="Changes" comment="implemented the input of file and verification of input">
+      <change afterPath="$PROJECT_DIR$/src/machineGUI2.form" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/machineGUI2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sample_input.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MachineGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MachineGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +39,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Users/jptma/Desktop/MazeBot",
+    "last_opened_file_path": "C:/Users/jptma/Desktop/STALGCM Case Study",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"
@@ -52,6 +54,14 @@
       <option name="presentableId" value="Default" />
       <updated>1690044588590</updated>
     </task>
+    <task id="LOCAL-00001" summary="implemented the input of file and verification of input">
+      <created>1690053840206</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1690053840206</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -64,5 +74,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="implemented the input of file and verification of input" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the input of file and verification of input" />
   </component>
 </project>

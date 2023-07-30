@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,12 +11,13 @@ public class Main {
     public static String startState;
     public static String initialStackSymbol;
     public static String [] finalStates;
+    public static ArrayList<String> transitionFunctions;
 
 
     public static void main(String[] args) {
 
         boolean validFile = false;
-        // loop until a valid maze.txt file is selected
+        // loop until a valid input text file is selected
         while (!validFile) {
 
             JFileChooser fileChooser = new JFileChooser();
@@ -83,7 +85,7 @@ public class Main {
 
 
                     // read the transition functions
-                    ArrayList<String> transitionFunctions = new ArrayList<>();
+                    transitionFunctions = new ArrayList<>();
                     while(sc.hasNextLine())
                         transitionFunctions.add(sc.nextLine());
 
@@ -93,7 +95,7 @@ public class Main {
                     else
                         validFile = false;
 
-                    System.out.println(validFile);
+                    System.out.println("valid file? " + validFile);
                     sc.close();
 
                 } catch (Exception e) {
@@ -107,8 +109,8 @@ public class Main {
             }
         }
 
-        MachineGUI machineGUI = new MachineGUI(states, inputSymbols, stackSymbols, startState, initialStackSymbol, finalStates);
-        Controller controller = new Controller(machineGUI);
+        MachineGUI machineGUI = new MachineGUI(states, inputSymbols, stackSymbols, startState, initialStackSymbol, finalStates, transitionFunctions);
+        Controller controller = new Controller(machineGUI, inputSymbols);
     }
 
 }
