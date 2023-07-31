@@ -5,4 +5,6 @@ A
 Z
 C
 -
-A a Z = C XZ
+A,a,Z,B,XZ
+B,b,X,C,λ
+C,a,Z,A,λ

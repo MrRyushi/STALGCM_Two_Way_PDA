@@ -3,6 +3,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import javax.swing.JFrame;
+
 
 public class MachineGUI extends JFrame {
 
@@ -15,30 +19,34 @@ public class MachineGUI extends JFrame {
     public JLabel finalStateLegendLabel;
     public JLabel currentStateLegendLabel;
     public JButton inputBtn;
+    public JButton stepBtn;
     public JTextField inputTF;
 
     // main input
     public ArrayList<String> transitionFunctions;
     public String startState;
+    public String[] finalStates;
+    public String initialStackSymbol;
 
     public MachineGUI(String[] states, String[] inputSymbols, String[] stackSymbols,
                       String startState, String initialStackSymbol, String[] finalStates,
                       ArrayList<String> transitionFunctions) {
         super("Deterministic PDA");
         this.setLayout(new BorderLayout());
-        this.setSize(2000, 1500);
-        this.setResizable(false);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         layoutComponents(states, inputSymbols, stackSymbols, startState, initialStackSymbol, finalStates, transitionFunctions);
 
         this.transitionFunctions = transitionFunctions;
         this.startState = startState;
+        this.finalStates = finalStates;
+        this.initialStackSymbol = initialStackSymbol;
 
-        this.setLocationRelativeTo(null);
+        // Set the frame to full screen with window decorations
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         this.setVisible(true);
-
-
     }
+
 
     public void layoutComponents(String[] states, String[] inputSymbols, String[] stackSymbols,
                                  String startState, String initialStackSymbol, String[] finalStates,
@@ -52,12 +60,16 @@ public class MachineGUI extends JFrame {
                 Graphics2D g2D = (Graphics2D) g;
                 g2D.setColor(Color.BLACK);
 
-                for (int i = 0; i < transitionFunctions.size(); i++) {
+                for(String transition: transitionFunctions){
+                    String[] elements = transition.split(",");
+                    String transitionCurrState = elements[0];
+                    String transitionNextState = elements[3];
+
                     // get substring FROM state
-                    String sFromState = transitionFunctions.get(i).substring(0, 1);
+                    String sFromState = transitionCurrState;
 
                     // get substring TO state
-                    String sToState = transitionFunctions.get(i).substring(8, 9);
+                    String sToState = transitionNextState;
 
                     // initialize JLabel from and to states
                     JLabel jFromState = null;
@@ -122,7 +134,7 @@ public class MachineGUI extends JFrame {
 
             for(String fState: finalStates){
                 if(fState.equals(state.getText())){
-                    state.setBackground(Color.yellow);
+                    state.setBackground(Color.red);
                 }
             }
         }
@@ -144,7 +156,7 @@ public class MachineGUI extends JFrame {
 
         // place a legend on the gui for final state
         finalStateLegend = new JPanel();
-        finalStateLegend.setBackground(Color.yellow);
+        finalStateLegend.setBackground(Color.red);
         finalStateLegend.setMaximumSize(new Dimension(30, 30)); // Set maximum size to preferred size
         // set the label
         finalStateLegendLabel = new JLabel("Final State");
@@ -152,7 +164,7 @@ public class MachineGUI extends JFrame {
 
         // place a legend on the gui for current state
         currentStateLegend = new JPanel();
-        currentStateLegend.setBackground(Color.ORANGE);
+        currentStateLegend.setBackground(Color.yellow);
         currentStateLegend.setMaximumSize(new Dimension(30, 30)); // Set maximum size to preferred size
         // set the label
         currentStateLegendLabel = new JLabel("Current State");
@@ -190,18 +202,25 @@ public class MachineGUI extends JFrame {
         inputBtn.setFont(new Font("Roboto", Font.PLAIN, 30));
         inputBtn.setBorder(new EmptyBorder(10,10,10,10));
 
+        // add a step button to check input step by step
+        stepBtn = new JButton("Step");
+        stepBtn.setFocusable(false);
+        stepBtn.setFont(new Font("Roboto", Font.PLAIN, 30));
+        stepBtn.setBorder(new EmptyBorder(10,10,10,10));
+        stepBtn.setVisible(false);
+
         // add a text field for string input
         inputTF = new JTextField();
         inputTF.setFont(new Font("Roboto", Font.PLAIN, 25));
+        inputTF.setPreferredSize(new Dimension(800, 50));
         inputTF.setHorizontalAlignment(JTextField.CENTER);
 
-        // add a new south panel
-        JPanel panelSouth = new JPanel(new BorderLayout());
-        panelSouth.add(inputTF, BorderLayout.NORTH);
-        panelSouth.add(inputBtn, BorderLayout.CENTER);
-        panelSouth.add(stack, BorderLayout.SOUTH);
-
-
+        // add a new south panel with FlowLayout to place buttons next to each other
+        JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelSouth.add(inputBtn);
+        panelSouth.add(stepBtn);
+        panelSouth.add(inputTF); // Assuming you want the text field to be placed below the buttons
+        panelSouth.add(stack);
 
         // Add the north panel to the NORTH of the BorderLayout
         this.add(panelNorth, BorderLayout.NORTH);
@@ -213,6 +232,7 @@ public class MachineGUI extends JFrame {
 
     public void setActionListener(ActionListener listener) {
         inputBtn.addActionListener(listener);
+        stepBtn.addActionListener(listener);
     }
 
     public String getInputTF() {
@@ -239,5 +259,62 @@ public class MachineGUI extends JFrame {
         return startState;
     }
 
+    public void setStepBtnVisible(Boolean stepBtn) {
+        this.stepBtn.setVisible(stepBtn);
+    }
 
+    public void setInputTF(String inputTF) {
+        this.inputTF.setText(inputTF);
+    }
+
+    public void enableInputTF(Boolean inputTF) {
+        this.inputTF.setEditable(inputTF);
+    }
+
+    public void enableInputBtn(Boolean inputBtn) {
+        this.inputBtn.setVisible(inputBtn);
+    }
+
+    public void transitionToNextState(String currentState, String nextState, String startState){
+        for(JLabel state: statesGUI){
+            if(state.getText().equals(nextState)){
+                state.setBackground(Color.ORANGE);
+            }
+
+            if(state.getText().equals(currentState)){
+                if(currentState.equals(startState))
+                    state.setBackground(Color.GREEN);
+                else
+                    state.setBackground(Color.WHITE);
+
+                for(String finalState: finalStates){
+                    if(finalState.equals(currentState)){
+                        state.setBackground(Color.RED);
+                    }
+                }
+            }
+        }
+    }
+
+    public String getInitialStackSymbol() {
+        return initialStackSymbol;
+    }
+
+    public void resetStartAndFinalStates(){
+        for(JLabel state: statesGUI){
+            if(state.getText().equals(startState)){
+                state.setBackground(Color.GREEN);
+            }
+
+            for(String finalState: finalStates){
+                if(state.getText().equals(finalState)){
+                    state.setBackground(Color.red);
+                }
+            }
+        }
+    }
+
+    public String[] getFinalStates() {
+        return finalStates;
+    }
 }
