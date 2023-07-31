@@ -1,9 +1,11 @@
 import javax.swing.*;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Driver program of Deterministic Push Down Automata Program
+ */
 public class Main {
     public static String [] states;
     public static String [] inputSymbols;
@@ -13,18 +15,21 @@ public class Main {
     public static String [] finalStates;
     public static ArrayList<String> transitionFunctions;
 
-
+    /**
+     * main function
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
-
+        // initialize a boolean variable for validity of file input
         boolean validFile = false;
+
         // loop until a valid input text file is selected
         while (!validFile) {
-
             JFileChooser fileChooser = new JFileChooser();
 
-            //Set default directory to this class's directory
+            // Set default directory to this class's directory
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-            //Set file filter to only show text files
+            // Set file filter to only show text files
             fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
                 @Override
                 public boolean accept(File f) {
@@ -49,8 +54,9 @@ public class Main {
                 // Z => initial stack symbol
                 // C => final state/s
                 // - => separator
-                // A a X = B Z => transition functions
-                // B b X = C X
+                // A,a,Z,B,XZ => transition functions
+                // B,b,X,C,λ
+                // C,a,Z,A,λ
 
                 try {
                     Scanner sc = new Scanner(fileChooser.getSelectedFile());
@@ -67,13 +73,12 @@ public class Main {
                     and final states are valid
                     */
                     if(states.length != 0 &&
-                            inputSymbols.length != 0 &&
-                            stackSymbols.length != 0 &&
-                            startState != null &&
-                            initialStackSymbol != null &&
-                            finalStates.length != 0){
-
-                        validFile = true;
+                       inputSymbols.length != 0 &&
+                       stackSymbols.length != 0 &&
+                       startState != null &&
+                       initialStackSymbol != null &&
+                       finalStates.length != 0){
+                        validFile = true; // file is valid
                     }
 
                     // read the separator and check if valid
@@ -99,8 +104,7 @@ public class Main {
                     sc.close();
 
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(
-                            null, "Error reading file",
+                    JOptionPane.showMessageDialog(null, "Error reading file",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="24ac1105-5aeb-4f98-9cfd-d08beb66924d" name="Changes" comment="implemented a draft for the representation of the machine on the GUI. added an event listener to verify the input string of the user and to transition to next state(incomplete)">
+    <list default="true" id="24ac1105-5aeb-4f98-9cfd-d08beb66924d" name="Changes" comment="implemented a step by step checking of input string for the machine definition. it already outputs accepted or rejected if the string is accepted or not.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MachineGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MachineGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sample_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/sample_input.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +65,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690742000797</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="implemented a step by step checking of input string for the machine definition. it already outputs accepted or rejected if the string is accepted or not.">
+      <created>1690807343425</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1690807343425</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -82,6 +89,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="implemented the input of file and verification of input" />
     <MESSAGE value="implemented a draft for the representation of the machine on the GUI. added an event listener to verify the input string of the user and to transition to next state(incomplete)" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented a draft for the representation of the machine on the GUI. added an event listener to verify the input string of the user and to transition to next state(incomplete)" />
+    <MESSAGE value="implemented a step by step checking of input string for the machine definition. it already outputs accepted or rejected if the string is accepted or not." />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented a step by step checking of input string for the machine definition. it already outputs accepted or rejected if the string is accepted or not." />
   </component>
 </project>

@@ -5,12 +5,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Controller class of the program
+ */
 public class Controller implements ActionListener, DocumentListener {
     public MachineGUI machineGUI;
     public String[] inputSymbols;
     public JLabel currentState = new JLabel();
 
 
+    /**
+     * default constructor for Controller
+     * @param machineGUI the machineGUI
+     * @param inputSymbols the inputSymbols from machine definition
+     */
     public Controller(MachineGUI machineGUI, String[] inputSymbols){
         this.machineGUI = machineGUI;
         this.inputSymbols = inputSymbols;
@@ -18,6 +26,10 @@ public class Controller implements ActionListener, DocumentListener {
         machineGUI.setActionListener(this);
     }
 
+    /**
+     * This function handles the events
+     * @param e the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         // get string input from text field
@@ -28,7 +40,9 @@ public class Controller implements ActionListener, DocumentListener {
         ArrayList<String> transitionFunctions = machineGUI.getTransitionFunctions();
         String startState = machineGUI.getStartState();
 
+        // if run button is clicked
         if(e.getActionCommand().equals("Run")){
+            // boolean variable for validity of string input
             boolean result = isStringValid(input);
 
             // if the string is valid
@@ -42,13 +56,16 @@ public class Controller implements ActionListener, DocumentListener {
                         machineGUI.transitionToNextState(" ", currentState.getText(), startState);
                     }
                 }
-                machineGUI.enableInputBtn(false);
+                // disable the run button and the text field
+                machineGUI.enableRunBtn(false);
                 machineGUI.enableInputTF(false);
             }
         }
 
 
+        // if the step button is clicked
         if (e.getActionCommand().equals("Step")) {
+            // while the input is not empty
             if (!input.isEmpty()) {
                 // Get the first symbol from the input string
                 String singleInput = input.substring(0, 1);
@@ -57,81 +74,99 @@ public class Controller implements ActionListener, DocumentListener {
                 input = input.substring(1);
                 machineGUI.setInputTF(input);
 
-                // get the stack symbols
-                String currStackSymbols = machineGUI.getStack();
+                // initialize a variable to store the transition found and a boolean to check if there is such a transition
+                String currTransition = null;
+                boolean transitionFound = false;
 
-                // for each transitions available
+                // get the transition for the input available
                 for(String transition: transitionFunctions) {
                     String[] elements = transition.split(",");
                     String transitionCurrState = elements[0];
                     String transitionInputSymbol = elements[1];
-                    String transitionPopSymbol;
-                    if(elements[2].equals("λ")) {
-                        transitionPopSymbol = "";
-                    } else {
-                        transitionPopSymbol = elements[2];
-                    }
-                    String transitionNextState = elements[3];
-                    String transitionPushSymbol;
-                    if(elements[4].equals("λ")) {
-                        transitionPushSymbol = "";
-                    } else {
-                        transitionPushSymbol = elements[4];
-                    }
-
-                  /*  System.out.println(transitionCurrState);
-                    System.out.println(transitionInputSymbol);
-                    System.out.println(transitionPopSymbol);
-                    System.out.println(transitionNextState);
-                    System.out.println(transitionPushSymbol);*/
 
                     // this if is to look for the transition coordinated with the singleInput (currently read symbol)
                     if (currentState.getText().equals(transitionCurrState) && transitionInputSymbol.equals(singleInput)) {
-                        // move the current state to the next state
-                        machineGUI.transitionToNextState(transitionCurrState, transitionNextState, startState);
-                        for(JLabel state: statesGUI){
-                            if(state.getText().equals(transitionNextState)){
-                                currentState = state;
-                            }
-                        }
-
-                        System.out.println(currStackSymbols + " == " + transitionPopSymbol);
-                        if (String.valueOf(currStackSymbols.charAt(0)).equals(transitionPopSymbol)) {
-                            // pop the stack symbol and push the new one
-                            machineGUI.setStack(transitionPushSymbol + currStackSymbols.substring(1));
-
-
-                        } else {
-                            System.out.println("error");
-                            JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
+                        // assign the curr transition
+                        currTransition = transition;
+                        transitionFound = true;
                     }
                 }
-                System.out.println(input);
-                if(input.isEmpty()){
-                    String[] finalStates = machineGUI.getFinalStates();
-                    Boolean currStateInFinalState = false;
 
+                // if the transition is not found
+                if(!transitionFound){
+                    // error immediately
+                    JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
+                    resetProgram();
+                    return;
+                }
+                // ELSE
+
+                // get the stack symbols
+                String currStackSymbols = machineGUI.getStack();
+                // split the string into an array
+                String[] elements = currTransition.split(",");
+                // get the current state of the transition
+                String transitionCurrState = elements[0];
+                // get the pop symbol of the transition
+                String transitionPopSymbol;
+                if(elements[2].equals("λ")) {
+                    transitionPopSymbol = "";
+                } else {
+                    transitionPopSymbol = elements[2];
+                }
+                // get the next state of the transition
+                String transitionNextState = elements[3];
+                // get the push symbol of the transition
+                String transitionPushSymbol;
+                if(elements[4].equals("λ")) {
+                    transitionPushSymbol = "";
+                } else {
+                    transitionPushSymbol = elements[4];
+                }
+
+                // move the current state to the next state
+                machineGUI.transitionToNextState(transitionCurrState, transitionNextState, startState);
+                // for each state in statesGUI (and assign the next state to be the current state)
+                for(JLabel state: statesGUI){
+                    if(state.getText().equals(transitionNextState)){
+                        currentState = state;
+                    }
+                }
+
+                // if the top of the stack is equal to the pop symbol of the transition
+                if (String.valueOf(currStackSymbols.charAt(0)).equals(transitionPopSymbol) || transitionPopSymbol == "") {
+                    // pop the stack symbol and push the new one
+                    machineGUI.setStack(transitionPushSymbol + currStackSymbols.substring(1));
+                    currStackSymbols = machineGUI.getStack();
+
+                } else {
+                    System.out.println("error");
+                    JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
+                    resetProgram();
+                }
+
+
+                // if the input string is already empty
+                if(input.isEmpty()){
+                    // get the final states
+                    String[] finalStates = machineGUI.getFinalStates();
+                    // variable to check if the current state is a final state
+                    boolean currStateInFinalState = false;
+
+                    // for every state in finalStates
                     for(String state: finalStates){
-                        if(currentState.getText().equals(state));{
+                        if(currentState.getText().equals(state)){
                             currStateInFinalState = true;
                         }
                     }
 
-                    System.out.println(currStateInFinalState);
-                    if(currStateInFinalState || currStackSymbols.isEmpty()){
+                    // if variable is true or the stack is empty
+                    if(currStateInFinalState || currStackSymbols.length() == 0){
                         JOptionPane.showMessageDialog(null, "Accepted!", "Accepted", JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-
-                    // reset the following:
-                    machineGUI.setInputTF("");
-                    machineGUI.setStepBtnVisible(false);
-                    machineGUI.enableInputBtn(true);
-                    machineGUI.enableInputTF(true);
-                    machineGUI.setStack(machineGUI.getInitialStackSymbol());
-                    machineGUI.resetStartAndFinalStates();
+                    resetProgram();
                 }
             } else {
                 System.out.println("Input string is empty!");
@@ -140,6 +175,24 @@ public class Controller implements ActionListener, DocumentListener {
         }
     }
 
+    /**
+     * Helper function to reset the program
+     */
+    public void resetProgram(){
+        // reset the following:
+        machineGUI.setInputTF("");
+        machineGUI.setStepBtnVisible(false);
+        machineGUI.enableRunBtn(true);
+        machineGUI.enableInputTF(true);
+        machineGUI.setStack(machineGUI.getInitialStackSymbol());
+        machineGUI.resetStartAndFinalStates();
+    }
+
+    /**
+     * Helper function to validate the string input
+     * @param input the input string
+     * @return true if valid and false if invalid
+     */
     public boolean isStringValid(String input) {
         boolean found = true; // Assume all characters are found in inputSymbols initially
 
