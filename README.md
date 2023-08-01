@@ -16,11 +16,11 @@ Two-Way Finite Accepter / Two-Way: Deterministic Finite Automata
 A,B,C    -- states <br>
 0,1      -- input symbols <br>
 <        -- left end marker <br>
-/>        -- right end marker <br>
+>        -- right end marker <br>
 A        -- start state <br>
 C        -- accept state <br>
 B        -- reject state <br>
-/-        -- separator <br>
+-        -- separator <br>
 A,a,B,R  -- transition function 1 <br>
 B,a,C,R  -- transition function 2 <br>
 C,a,A,R  -- transition function 3 <br>
@@ -29,12 +29,12 @@ A,b,A,R  -- transition function n <br>
 # Sample Machine Definition
 A,B,C,D,E,F,G <br>
 a,b <br>
-/< <br>
-/> <br>
+< <br>
+> <br>
 A <br>
 G <br>
 F <br>
-/- <br>
+- <br>
 A,<,A,R <br>
 A,a,B,R <br>
 B,a,C,R <br>
