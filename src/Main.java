@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Driver program of Deterministic Push Down Automata Program
+ * Driver program of Two-Way Push Down Automata Program
  */
 public class Main {
     public static String [] states;
     public static String [] inputSymbols;
+    public static String leftEndMarker;
+    public static String rightEndMarker;
     public static String [] stackSymbols;
     public static String startState;
     public static String initialStackSymbol;
@@ -49,14 +51,16 @@ public class Main {
                 // FORMAT OF THE FILE
                 // A,B,C  => states
                 // a,b  => input symbols
+                // ¢ => left end marker
+                // $ => right end marker
                 // X,Z => stack symbols
                 // A => initial state
                 // Z => initial stack symbol
                 // C => final state/s
                 // - => separator
-                // A,a,Z,B,XZ => transition functions
-                // B,b,X,C,λ
-                // C,a,Z,A,λ
+                // A,a,Z,1,B,XZ => transition functions
+                // B,b,X,-1,C,λ
+                // C,a,Z,0,A,λ
 
                 try {
                     Scanner sc = new Scanner(fileChooser.getSelectedFile());
@@ -64,16 +68,34 @@ public class Main {
                     // get machine definition from input file
                     states = sc.nextLine().split(",");
                     inputSymbols = sc.nextLine().split(",");
+                    leftEndMarker = sc.nextLine();
+                    rightEndMarker = sc.nextLine();
                     stackSymbols = sc.nextLine().split(",");
                     startState = sc.nextLine();
                     initialStackSymbol = sc.nextLine();
                     finalStates = sc.nextLine().split(",");
+
+                    /*
+                    for(String state: states)
+                        System.out.println("1 " + state);
+                    for(String input: inputSymbols)
+                        System.out.println("2 " + input);
+                    System.out.println("3 " + leftEndMarker);
+                    System.out.println("4 " + rightEndMarker);
+                    for(String symbol: stackSymbols)
+                        System.out.println("5 " + symbol);
+                    System.out.println("6 " + startState);
+                    System.out.println("7 " + initialStackSymbol);
+                    for(String state: finalStates)
+                        System.out.println("8 " + state);
 
                     /* check if the states, input symbols, stack symbols, start state, initial stack symbol,
                     and final states are valid
                     */
                     if(states.length != 0 &&
                        inputSymbols.length != 0 &&
+                       leftEndMarker != null &&
+                       rightEndMarker != null &&
                        stackSymbols.length != 0 &&
                        startState != null &&
                        initialStackSymbol != null &&
@@ -113,8 +135,10 @@ public class Main {
             }
         }
 
-        MachineGUI machineGUI = new MachineGUI(states, inputSymbols, stackSymbols, startState, initialStackSymbol, finalStates, transitionFunctions);
+        MachineGUI machineGUI = new MachineGUI(states, inputSymbols, leftEndMarker, rightEndMarker, stackSymbols,
+                                               startState, initialStackSymbol, finalStates, transitionFunctions);
         Controller controller = new Controller(machineGUI, inputSymbols);
     }
+
 
 }

@@ -12,6 +12,9 @@ public class Controller implements ActionListener, DocumentListener {
     public MachineGUI machineGUI;
     public String[] inputSymbols;
     public JLabel currentState = new JLabel();
+    public int currHeadPosition;
+    public boolean concluded = false;
+    public int headDirection = 1;
 
 
     /**
@@ -54,6 +57,9 @@ public class Controller implements ActionListener, DocumentListener {
                     if(state.getText().equals(startState)){
                         currentState = state;
                         machineGUI.transitionToNextState(" ", currentState.getText(), startState);
+                        input = machineGUI.getLeftEndMarker() + input + machineGUI.rightEndMarker;
+                        machineGUI.setInputTF(input);
+                        currHeadPosition = 1;
                     }
                 }
                 // disable the run button and the text field
@@ -65,113 +71,118 @@ public class Controller implements ActionListener, DocumentListener {
 
         // if the step button is clicked
         if (e.getActionCommand().equals("Step")) {
-            // while the input is not empty
-            if (!input.isEmpty()) {
-                // Get the first symbol from the input string
-                String singleInput = input.substring(0, 1);
+            // Get the symbol read based on direction
+            String singleInput = input.substring(currHeadPosition, currHeadPosition+1);;
 
-                // Remove the first symbol from the input string
-                input = input.substring(1);
-                machineGUI.setInputTF(input);
+            // get the stack symbols
+            String currStackSymbols = machineGUI.getStack();
+            // initialize a boolean variable to check if there is such a transition
+            boolean transitionFound = false;
 
-                // initialize a variable to store the transition found and a boolean to check if there is such a transition
-                String currTransition = null;
-                boolean transitionFound = false;
+            // get the transition for the input available
+            for(String transition: transitionFunctions) {
+                // split the elements
+                String[] elements = transition.split(",");
 
-                // get the transition for the input available
-                for(String transition: transitionFunctions) {
-                    String[] elements = transition.split(",");
-                    String transitionCurrState = elements[0];
-                    String transitionInputSymbol = elements[1];
-
-                    // this if is to look for the transition coordinated with the singleInput (currently read symbol)
-                    if (currentState.getText().equals(transitionCurrState) && transitionInputSymbol.equals(singleInput)) {
-                        // assign the curr transition
-                        currTransition = transition;
-                        transitionFound = true;
-                    }
-                }
-
-                // if the transition is not found
-                if(!transitionFound){
-                    // error immediately
-                    JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
-                    resetProgram();
-                    return;
-                }
-                // ELSE
-
-                // get the stack symbols
-                String currStackSymbols = machineGUI.getStack();
-                // split the string into an array
-                String[] elements = currTransition.split(",");
-                // get the current state of the transition
+                // get the transition current state
                 String transitionCurrState = elements[0];
+
+                // get the transition input symbol
+                String transitionInputSymbol;
+                if(elements[1].equals("λ"))
+                    transitionInputSymbol = "";
+                else
+                    transitionInputSymbol = elements[1];
+
                 // get the pop symbol of the transition
                 String transitionPopSymbol;
-                if(elements[2].equals("λ")) {
+                if(elements[2].equals("λ"))
                     transitionPopSymbol = "";
-                } else {
+                else
                     transitionPopSymbol = elements[2];
-                }
+
+                // get the direction
+                headDirection = Integer.parseInt(elements[3]);
+
                 // get the next state of the transition
-                String transitionNextState = elements[3];
+                String transitionNextState = elements[4];
+
                 // get the push symbol of the transition
                 String transitionPushSymbol;
-                if(elements[4].equals("λ")) {
+                if(elements[5].equals("λ"))
                     transitionPushSymbol = "";
-                } else {
-                    transitionPushSymbol = elements[4];
-                }
-
-                // move the current state to the next state
-                machineGUI.transitionToNextState(transitionCurrState, transitionNextState, startState);
-                // for each state in statesGUI (and assign the next state to be the current state)
-                for(JLabel state: statesGUI){
-                    if(state.getText().equals(transitionNextState)){
-                        currentState = state;
-                    }
-                }
-
-                // if the top of the stack is equal to the pop symbol of the transition
-                if (String.valueOf(currStackSymbols.charAt(0)).equals(transitionPopSymbol) || transitionPopSymbol == "") {
-                    // pop the stack symbol and push the new one
-                    machineGUI.setStack(transitionPushSymbol + currStackSymbols.substring(1));
-                    currStackSymbols = machineGUI.getStack();
-
-                } else {
-                    System.out.println("error");
-                    JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
-                    resetProgram();
-                }
+                else
+                    transitionPushSymbol = elements[5];
 
 
-                // if the input string is already empty
-                if(input.isEmpty()){
-                    // get the final states
-                    String[] finalStates = machineGUI.getFinalStates();
-                    // variable to check if the current state is a final state
-                    boolean currStateInFinalState = false;
+                // look for the transition coordinated with the singleInput (currently read symbol)
+                if (currentState.getText().equals(transitionCurrState) && singleInput.equals(transitionInputSymbol) && transitionPopSymbol.equals("")||
+                    currentState.getText().equals(transitionCurrState) && transitionInputSymbol.equals("") && transitionPopSymbol.equals("")||
+                    currentState.getText().equals(transitionCurrState) && transitionInputSymbol.equals("") && String.valueOf(currStackSymbols.charAt(0)).equals(transitionPopSymbol)  ||
+                    currentState.getText().equals(transitionCurrState) &&  singleInput.equals(transitionInputSymbol) && String.valueOf(currStackSymbols.charAt(0)).equals(transitionPopSymbol)
+                    ) {
+                    transitionFound = true;
 
-                    // for every state in finalStates
-                    for(String state: finalStates){
-                        if(currentState.getText().equals(state)){
-                            currStateInFinalState = true;
+                    // MOVE THE CURRENT STATE TO THE NEXT STATE
+                    machineGUI.transitionToNextState(transitionCurrState, transitionNextState, startState);
+                    // for each state in statesGUI (and assign the next state to be the current state)
+                    for(JLabel state: statesGUI){
+                        if(state.getText().equals(transitionNextState)){
+                            currentState = state;
                         }
                     }
 
-                    // if variable is true or the stack is empty
-                    if(currStateInFinalState || currStackSymbols.length() == 0){
-                        JOptionPane.showMessageDialog(null, "Accepted!", "Accepted", JOptionPane.INFORMATION_MESSAGE);
+                    // POP THE TOP OF STACK AND PUSH NEW ONE
+                    if ( transitionPopSymbol == "" || String.valueOf(currStackSymbols.charAt(0)).equals(transitionPopSymbol)) {
+                        // pop the stack symbol and push the new one
+                        machineGUI.setStack(transitionPushSymbol + currStackSymbols.substring(1));
+                        currStackSymbols = machineGUI.getStack();
+
                     } else {
+                        System.out.println("error");
                         JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
+                        resetProgram();
                     }
-                    resetProgram();
+
+                    // MOVE THE HEAD ELEMENT
+                    input = input.replace("H", "");
+                    StringBuilder stringBuilder = new StringBuilder(input);
+                    currHeadPosition += headDirection;
+                    stringBuilder.insert(currHeadPosition, "H");
+                    System.out.println(stringBuilder);
+                    machineGUI.setInputTF(String.valueOf(stringBuilder));
+
                 }
-            } else {
-                System.out.println("Input string is empty!");
+
             }
 
+            // if the transition is not found
+            if(!transitionFound){
+                // get the final states
+                String[] finalStates = machineGUI.getFinalStates();
+
+                // variable to check if the current state is a final state
+                boolean currStateInFinalState = false;
+
+                // for every state in finalStates
+                for(String state: finalStates){
+                    if(currentState.getText().equals(state)){
+                        currStateInFinalState = true;
+                    }
+                }
+
+                // if variable is true or the stack is empty
+                if(currStateInFinalState || currStackSymbols.length() == 0){
+                    JOptionPane.showMessageDialog(null, "Accepted!", "Accepted", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Rejected!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                resetProgram();
+            }
+
+
+        } else {
+            System.out.println("Input string is empty!");
         }
     }
 

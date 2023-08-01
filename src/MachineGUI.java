@@ -21,6 +21,7 @@ public class MachineGUI extends JFrame {
     public JLabel startStateLegendLabel;
     public JLabel finalStateLegendLabel;
     public JLabel currentStateLegendLabel;
+    public JLabel allTransitions;
     // Run Btn
     public JButton runBtn;
     // Step Btn
@@ -29,10 +30,16 @@ public class MachineGUI extends JFrame {
     public JTextField inputTF;
 
     // The following came from the input file
-    public ArrayList<String> transitionFunctions;
+    public String[] states;
+    public String[] inputSymbols;
+    public String leftEndMarker;
+    public String rightEndMarker;
+    public String[] stackSymbols;
     public String startState;
-    public String[] finalStates;
     public String initialStackSymbol;
+    public String[] finalStates;
+    public ArrayList<String> transitionFunctions;
+
 
     /**
      * default constructor for MachineGUI
@@ -44,32 +51,36 @@ public class MachineGUI extends JFrame {
      * @param finalStates the final states of the machine
      * @param transitionFunctions the transition functions of the machine
      */
-    public MachineGUI(String[] states, String[] inputSymbols, String[] stackSymbols,
-                      String startState, String initialStackSymbol, String[] finalStates,
+    public MachineGUI(String[] states, String[] inputSymbols, String leftEndMarker, String rightEndMarker,
+                      String[] stackSymbols, String startState, String initialStackSymbol, String[] finalStates,
                       ArrayList<String> transitionFunctions) {
-        super("Deterministic PDA");
+        super("Two-Way PDA");
         this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Set the frame to full screen with window decorations
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // assign the parameters
-        this.transitionFunctions = transitionFunctions;
+        this.states = states;
+        this.inputSymbols = inputSymbols;
+        this.leftEndMarker = leftEndMarker;
+        this.rightEndMarker = rightEndMarker;
+        this.stackSymbols = stackSymbols;
         this.startState = startState;
-        this.finalStates = finalStates;
         this.initialStackSymbol = initialStackSymbol;
+        this.finalStates = finalStates;
+        this.transitionFunctions = transitionFunctions;
 
-        layoutComponents(states, inputSymbols, stackSymbols, startState, initialStackSymbol, finalStates, transitionFunctions);
+        layoutComponents();
         this.setVisible(true);
     }
 
 
-    public void layoutComponents(String[] states, String[] inputSymbols, String[] stackSymbols,
-                                 String startState, String initialStackSymbol, String[] finalStates,
-                                 ArrayList<String> transitionFunctions) {
+    public void layoutComponents() {
 
         // center panel with GridBagLayout
         JPanel panelCenter = new JPanel(new GridBagLayout()) {
+            /*
             // this code is for drawing a line transition from one state to another
             @Override
             protected void paintComponent(Graphics g) {
@@ -125,7 +136,7 @@ public class MachineGUI extends JFrame {
                         g2D.drawLine(x1, y1 - jFromState.getHeight() / 2, x2, y2 + jToState.getHeight() / 2);
                     }
                 }
-            }
+            }*/
         };
 
         // these are for setting the margin of each state (box)
@@ -232,6 +243,11 @@ public class MachineGUI extends JFrame {
         inputTF.setFont(new Font("Roboto", Font.PLAIN, 25));
         inputTF.setPreferredSize(new Dimension(800, 50));
         inputTF.setHorizontalAlignment(JTextField.CENTER);
+
+        // add a JLabel to display all transitions of the machine
+        allTransitions = new JLabel();
+        allTransitions.setFont(new Font("Roboto", Font.PLAIN, 15));
+
 
         // add a new south panel with FlowLayout to place buttons next to each other
         JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -404,4 +420,12 @@ public class MachineGUI extends JFrame {
         }
     }
 
+
+    public String getLeftEndMarker() {
+        return leftEndMarker;
+    }
+
+    public String getRightEndMarker() {
+        return rightEndMarker;
+    }
 }
